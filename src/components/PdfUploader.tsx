@@ -18,6 +18,8 @@ export default function PdfUploader({ onPdfParsed }: PdfUploaderProps) {
       body: formData,
     });
 
+    console.log("(PdfUploader) response:", res);
+
     if (!res.ok) {
       alert("Failed to parse PDF.");
       return;
