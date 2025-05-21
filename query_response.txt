@@ -1,0 +1,8 @@
+On uploading my resume
+link->https://drive.google.com/file/d/1nfVPy84Y-vs98EnlEYhY-hSNVd6LJFst/view?usp=drive_link
+
+Query1 -> Web Technologies?
+Response -> Based on the provided text, the user is asking about Web Technologies. The user specifically mentions: * **ReactJS** * **NextJS** * **Node.js** * **Express.js** * **MongoDB** * **Tailwind CSS** And they also mention experience with these technologies in their projects.
+
+Query2 -> Highlight Blood Bank app in short
+Response -> Here’s a short highlight of the Blood Bank Management System app: **Developed a role-based system for secure blood access, improving real-time decision-making and boosting registration efficiency by 40%.**
