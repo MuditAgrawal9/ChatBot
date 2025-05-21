@@ -5,17 +5,32 @@ interface PdfUploaderProps {
   onPdfParsed: (text: string) => void;
 }
 
+/**
+ * PdfUploader Component
+ * ---------------------
+ * Allows users to upload a PDF file, sends it to the backend for parsing,
+ * and returns the extracted text to the parent via onPdfParsed.
+ *
+ * Props:
+ * - onPdfParsed: function called with the extracted text after parsing
+ */
 export default function PdfUploader({ onPdfParsed }: PdfUploaderProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  /**
+   * Handles file selection and triggers PDF parsing via API.
+   * @param e - File input change event
+   */
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setSelectedFile(file);
 
+    // Prepare form data for file upload
     const formData = new FormData();
     formData.append("file", file);
 
+    // Send the file to the backend API for parsing
     const res = await fetch("/api/parse-pdf", {
       method: "POST",
       body: formData,
@@ -26,6 +41,7 @@ export default function PdfUploader({ onPdfParsed }: PdfUploaderProps) {
       return;
     }
 
+    // Extract parsed text from response and pass to parent
     const { text } = await res.json();
     onPdfParsed(text);
     alert("PDF uploaded and parsed!");
@@ -38,6 +54,7 @@ export default function PdfUploader({ onPdfParsed }: PdfUploaderProps) {
           htmlFor="pdf-upload"
           className="flex flex-col items-center justify-center w-full max-w-xs h-40 border-2 border-dashed border-blue-400 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition"
         >
+          {/* Show file info if selected, otherwise show upload prompt */}
           {selectedFile ? (
             <div className="flex flex-col items-center">
               {/* PDF Icon */}
@@ -72,6 +89,7 @@ export default function PdfUploader({ onPdfParsed }: PdfUploaderProps) {
             </div>
           ) : (
             <>
+              {/* Upload Icon and prompt */}
               <svg
                 className="w-12 h-12 text-blue-400 mb-2"
                 fill="none"

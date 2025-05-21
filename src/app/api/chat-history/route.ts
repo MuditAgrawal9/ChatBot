@@ -1,16 +1,17 @@
-// import { cookies, headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-// import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 
-export async function GET(req: NextRequest) {
-  //   console.log("Request:", req);
-  const authHeader = req.headers.get("authorization");
-  console.log("authHeader:", authHeader);
-  //   const token = authHeader?.replace("Bearer ", "");
-  //   console.log("token", token);
+/**
+ * GET /api/chat-history
+ * Retrieves authenticated user's chat history from Supabase database
+ * Requires valid access token in Authorization header
+ */
 
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
   let accessToken = null;
+
+  // Extract token from Authorization header
   if (authHeader?.startsWith("Bearer ")) {
     const possibleJson = authHeader.slice(7); // Remove 'Bearer '
     try {
@@ -23,20 +24,23 @@ export async function GET(req: NextRequest) {
     }
   }
   const token = accessToken;
-  console.log("access_token", accessToken);
+
   if (!token)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Initialize Supabase client with authenticated token
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { global: { headers: { Authorization: `Bearer ${token}` } } }
   );
+
+  // Get authenticated user from Supabase
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("(chat-history api)User:", user);
+  //   console.log("(chat-history api)User:", user);
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

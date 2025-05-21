@@ -1,7 +1,20 @@
+/**
+ * ChatInterface Component
+ * ----------------------
+ * Provides a chat UI for users to interact with an AI assistant,
+ * upload PDFs, and view chat history with timestamps.
+ */
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import PdfUploader from "./PdfUploader";
 
+/**
+ * Message interface for chat messages.
+ * @property {("user"|"assistant")} role - Who sent the message.
+ * @property {string} content - The message text.
+ * @property {string} [created_at] - Optional ISO timestamp.
+ */
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -20,10 +33,12 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Load chat history on mount
+  // Load chat history from the backend when the component mounts
   useEffect(() => {
     const fetchHistory = async () => {
+      // Get the Supabase auth token from localStorage
       const token = localStorage.getItem("sb-ufwrynmkgilpmchhslzi-auth-token");
+      // Fetch chat history from API
       const res = await fetch("/api/chat-history", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -35,6 +50,9 @@ export default function ChatInterface() {
     fetchHistory();
   }, []);
 
+  /**
+   * Handles sending a user message to the backend and updating chat history.
+   */
   const handleSend = async () => {
     if (!input.trim() || loading) return;
     setMessages((prev) => [
@@ -44,6 +62,7 @@ export default function ChatInterface() {
     setLoading(true);
 
     const token = localStorage.getItem("sb-ufwrynmkgilpmchhslzi-auth-token");
+    // Send user message and PDF text to backend
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -67,13 +86,17 @@ export default function ChatInterface() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
+      {/* PDF Uploader for extracting PDF text */}
       <PdfUploader onPdfParsed={setPdfText} />
       <div className="h-[30rem] overflow-y-auto border rounded-2xl p-4 bg-gradient-to-br from-white via-blue-50 to-blue-100 mb-4 shadow-lg flex flex-col gap-2 transition-all">
+        {/* Show a prompt if there are no messages */}
         {messages.length === 0 && (
           <div className="text-gray-400 text-center mt-20">
             Start the conversation by asking a question!
           </div>
         )}
+
+        {/* Render each chat message */}
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -81,11 +104,14 @@ export default function ChatInterface() {
               msg.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
+            {/* Assistant avatar */}
             {msg.role === "assistant" && (
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold shadow text-sm">
                 AI
               </div>
             )}
+
+            {/* Message bubble and timestamp */}
             <div className="flex flex-col max-w-[70%]">
               <span
                 className={`
@@ -108,6 +134,8 @@ export default function ChatInterface() {
                   })}
                 </span>
               )}
+
+              {/* User avatar */}
             </div>
             {msg.role === "user" && (
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shadow text-sm">
@@ -116,6 +144,8 @@ export default function ChatInterface() {
             )}
           </div>
         ))}
+
+        {/* Loading indicator for assistant typing */}
         {loading && (
           <div className="flex items-end gap-2 animate-pulse">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold shadow text-sm">
@@ -126,8 +156,12 @@ export default function ChatInterface() {
             </span>
           </div>
         )}
+
+        {/* Dummy div for auto-scroll */}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Input area */}
       <div className="sticky bottom-0 py-2 z-10">
         <form
           className="flex gap-2 items-center"
