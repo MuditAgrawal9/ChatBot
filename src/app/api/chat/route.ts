@@ -1,15 +1,41 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+
 export async function POST(req: NextRequest) {
   const { message, pdfText } = await req.json();
-  // Get user from Supabase auth (example, adapt as needed)
+  const authHeader = req.headers.get("authorization");
+  console.log("authHeader:", authHeader);
+  let accessToken = null;
+  if (authHeader?.startsWith("Bearer ")) {
+    const possibleJson = authHeader.slice(7); // Remove 'Bearer '
+    try {
+      // Try to parse as JSON
+      const obj = JSON.parse(possibleJson);
+      accessToken = obj.access_token;
+    } catch {
+      // If not JSON, treat as plain token string
+      accessToken = possibleJson;
+    }
+  }
+  const token = accessToken;
+  console.log("access_token", accessToken);
+  if (!token)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } }
+  );
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  console.log("(chat api)User:", user);
+
+  // if (!user) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   console.log("User in chat API:", user);
 

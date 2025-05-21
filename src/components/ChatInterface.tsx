@@ -38,10 +38,13 @@ export default function ChatInterface() {
     if (!input.trim() || loading) return;
     setMessages((prev) => [...prev, { role: "user", content: input }]);
     setLoading(true);
-
+    const token = localStorage.getItem("sb-ufwrynmkgilpmchhslzi-auth-token");
     const res = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ message: input, pdfText }),
     });
     const data = await res.json();
