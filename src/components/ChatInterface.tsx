@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PdfUploader from "./PdfUploader";
 
 interface Message {
@@ -12,6 +12,27 @@ export default function ChatInterface() {
   const [input, setInput] = useState("");
   const [pdfText, setPdfText] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Load chat history on mount
+  useEffect(() => {
+    const fetchHistory = async () => {
+      // const res = await fetch("/api/chat-history", {
+      //   credentials: "include", // 👈 Send cookies
+      // });
+      const token = localStorage.getItem("sb-ufwrynmkgilpmchhslzi-auth-token");
+      console.log("(ChatInterface)token", token);
+      const res = await fetch("/api/chat-history", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log("chat history data:", data);
+      if (data.messages) setMessages(data.messages || []);
+    };
+    fetchHistory();
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;

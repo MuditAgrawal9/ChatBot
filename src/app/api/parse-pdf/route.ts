@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file");
 
     // For debugging: log the file
-    console.log("Received file:", file);
+    // console.log("Received file:", file);
 
     if (!file || typeof file === "string") {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
