@@ -49,5 +49,14 @@ GEMINI_API_KEY=your-gemini-api-key
    
 5. Run the App
 
+---
 
+Additional Information
+-Code Comments:
+All source code files include clear comments explaining the logic and structure.
 
+-Database Schema:
+The Supabase SQL code for table creation and policies is provided in schema-code.sql.
+
+-Sample Queries & Responses:
+Example user queries and chatbot responses are included in query_response.txt.
